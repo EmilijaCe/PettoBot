@@ -1,0 +1,4 @@
+pet 1 0 0 2
+walk 1 0 0 3
+train 0 10 0 5
+battle 0 0 3 10
