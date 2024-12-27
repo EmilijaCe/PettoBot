@@ -397,7 +397,7 @@ async def train(ctx):
         await ctx.respond("PettoBot: You do not have a pet!")
         return
     
-    mycursor.execute(f"select strength_points, name, training_time, picture, personality from petbot where owner = {user};")
+    mycursor.execute(f"select strength_points, name, train_time, picture, personality from petbot where owner = {user};")
     results = mycursor.fetchone()
     training_time = results[2]
     name = results[1]
