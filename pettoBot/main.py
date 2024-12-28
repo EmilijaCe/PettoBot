@@ -4,6 +4,8 @@ import random
 import mysql.connector
 from discord.ui import Button, View
 import Personalities, Actions, Food
+import Database as db
+import Commands as cmd
 
 
 '''
@@ -20,26 +22,19 @@ things to improve:
 
 # SET VARIABLES
 
-password = input("MYSQL password: ")
-token = input("Discord bot token: ")
+
 
 # CONNECT BOT
 
-bot = discord.Bot()
-
-@bot.event
-async def on_ready():
-    print(f"Logged in as {bot.user}")
-
 
 # CONNECT MYSQL
-
+'''
 con = mysql.connector.connect(host = 'localhost', user = 'root', password = password, database = 'bots')
 mycursor = con.cursor()
-
+'''
 
 # INITIALIZE OBJECTS
-
+'''
 with open('pettoBot/personalities.txt', 'r') as file:
     count = 0
     for line in file:
@@ -71,10 +66,10 @@ with open('pettoBot/actions.txt', 'r') as file:
     for line in file:
         ac = line.split()
         actions.append(Actions.Actions(ac[0], ac[1], ac[2], ac[3], ac[4]))
-
+'''
 
 ############ COMMANDS ################
-
+'''
 # adopt
 @bot.slash_command(description = "Adopts a new pet")
 async def adopt(ctx, *, gender):
@@ -439,11 +434,9 @@ def hasAdopted(user):
         if str(result[0]) == user:
             return True
     return False
-   
+'''
 ######################################
 
 
 # RUN
-
-bot.run(token)
 

@@ -1,9 +1,14 @@
 import discord
+from discord.ui import Button, View
 import Command_logic as cmd
 
-def __init__(Bot):
-    global bot
-    bot = Bot
+token = input("Discord bot token: ")
+bot = discord.Bot()
+
+@bot.event
+async def on_ready():
+    print(f"Logged in as {bot.user}")
+
 
 
 @bot.slash_command(description = "Adopts a new pet")
@@ -45,6 +50,7 @@ async def profile(ctx):
 async def pet(ctx):
     user = ctx.author.id
     response = cmd.action(user, 0)
+    
     if response != None:
         await ctx.respond(response)
     else:
@@ -65,3 +71,84 @@ async def walk(ctx):
         await ctx.respond(f"{results[0]}: {results[1]}")
         await ctx.send(results[2])
         await ctx.send(f"\n+{results[3]} love points")
+
+
+@bot.slash_command(description = "Increases pet's strength")
+async def train(ctx):
+    user = ctx.author.id
+    response = cmd.action(user, 2)
+    if response != None:
+        await ctx.respond(response)
+    else:
+        results = cmd.train(user)
+        await ctx.respond(f"{results[0]}: {results[1]}")
+        await ctx.send(results[2])
+        await ctx.send("\n++strength")
+        
+
+
+@bot.slash_command(description = "Challenges another user to a pet battle")
+async def battle(ctx, *, user):
+    challenger = ctx.author.id
+    opponent = str(user)
+    opponent = opponent.replace("<@", "")
+    opponent = opponent.replace('>', '')
+    
+    response = cmd.action(challenger, 3)
+    if response != None:
+        await ctx.respond(response)
+        return
+    response = cmd.action(opponent, 3)
+    if response != None:
+        await ctx.respond(response)
+        return
+    
+    async def first_button_callback(interaction):
+        buttonDecline.disabled = True
+        buttonAccept.disabled = True
+        view1 = View()
+        view1.add_item(buttonAccept)
+        view1.add_item(buttonDecline)
+        await interaction.response.edit_message(view = view1)
+        await battle_accepted(ctx, challenger, opponent)
+    
+    async def second_button_callback(interaction):
+        buttonDecline.disabled = True
+        buttonAccept.disabled = True
+        view2 = View()
+        view2.add_item(buttonAccept)
+        view2.add_item(buttonDecline)
+        await interaction.response.edit_message(view = view2)
+        await ctx.respond("PettoBot: The user declined your challenge!")
+    
+    buttonAccept = Button(label = "Accept", row = 0, style = discord.ButtonStyle.green)
+    buttonDecline = Button(label = "Decline", row = 0, style = discord.ButtonStyle.red)
+    buttonAccept.callback = first_button_callback
+    buttonDecline.callback = second_button_callback
+    
+    view = View()
+    await ctx.respond(f"PettoBot: {user}, {ctx.author.mention} challenges you to a pet battle! Press the button if you accept\n", view = view)
+    
+
+async def battle_accepted(ctx, challenger, opponent):
+    result = cmd.battle(challenger, opponent)
+    if result == "tie":
+        await ctx.respond("PettoBot: The battle ends with a tie! The coins remain in your pockets")
+        return
+    elif result == challenger:
+        results = cmd.winnerAndLoser(challenger, opponent)
+    elif result == opponent:
+        results = cmd.winnerAndLoser(opponent, challenger)
+    
+    await ctx.send(f"PettoBot: {results[0]} strikes {results[3]} with great force!")
+    await ctx.send(results[2])
+    await ctx.send(f"PettoBot: {results[3]} takes the blow!")
+    await ctx.send(results[5])
+    
+    personalityChal = cmd.pickPersonality(results[1])
+    personalityOpp = cmd.pickPersonality(results[4])
+    await ctx.send(f"{results[0]}: {personalityChal.winning}")
+    await ctx.send(f"{results[3]}: {personalityOpp.losing}")
+    
+
+bot.run(token)

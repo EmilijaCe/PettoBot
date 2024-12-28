@@ -71,8 +71,7 @@ def action(user, num):
         return "PettoBot: You do not have a pet!"
     
     action = str(actions[num].name)
-    items = ["love_points", "name", action + "_time"]
-    results = db.select("petbot", items, "owner", user)
+    results = db.select("petbot", ["name", action + "_time"], "owner", user)
     
     if action == "pet":
         pastForm = "petted"
@@ -80,11 +79,17 @@ def action(user, num):
         pastForm = action + "ed"
     
     currenttime = time.time()
-    if (currenttime - float(results[2]) < float(actions[num].time_limit) * 60):
-        return f"PettoBot: You have already {pastForm} {results[1]}. Wait {actions[num].time_limit} minutes to {action} again."
     
-    if int(results[0]) < int(actions[num].required_love):
-        return f"PettoBot: {results[1]} does not have enough love points for battle."
+    if (num != 3):
+        if (currenttime - float(results[1]) < float(actions[num].time_limit) * 60):
+            return f"PettoBot: You have already {pastForm} {results[0]}. Wait {actions[num].time_limit} minutes to {action} again."
+    else:
+        lovePoints = int(db.select("petbot", ["love_points"], "owner", user)[0])
+        if (currenttime - float(results[1]) < float(actions[num].time_limit) * 60):
+            return f"PettoBot: {results[0]} has already {pastForm}. Wait {actions[num].time_limit} minutes to {action} again."
+        
+        if lovePoints < int(actions[num].required_love):
+            return f"PettoBot: {results[0]} does not have enough love points for battle."
 
 
 def show_love(user, num):
@@ -99,6 +104,37 @@ def show_love(user, num):
     elif num == 1:
         loveOptions = [personality.walk1, personality.walk2]
     return [results[1], random.choice(loveOptions), results[3], actions[0].love]
+
+
+def train(user):
+    results = db.select("petbot", ["strength_points", "name", "personality", "picture"], "owner", user)
+    db.update("petbot", ["strength_points", "train_time"], [int(results[0]) + int(actions[2].strength), time.time()], "owner", user)
+    personality = pickPersonality(results[2])
+    return [results[1], personality.train, results[3]]
+
+
+def battle(challenger, opponent):
+    challengerStrength = int(db.select("petbot", ["strength_points"], "owner", challenger)[0])
+    opponentStrength = int(db.select("petbot", ["strength_points"], "owner", opponent)[0])
+    db.update("petbot", ["battle_time"], [time.time()], "owner", challenger)
+    db.update("petbot", ["battle_time"], [time.time()], "owner", opponent)
+    
+    if challengerStrength > opponentStrength:
+        return challenger
+    elif challengerStrength < opponentStrength:
+        return opponent
+    else:
+        return "tie"
+
+    
+def winnerAndLoser(winner, loser):
+    winData = db.select("petbot", ["name", "personality", "coins", "picture", "battle_wins"], "owner", winner)
+    loseData = db.select("petbot", ["name", "personality", "coins", "picture", "battle_losses"], "owner", loser)
+    totalCoins = int(winData[2]) + int(loseData[2])
+    db.update("petbot", ["battle_wins", "coins"], [int(winData[4]) + 1, totalCoins], "owner", winner)
+    db.update("petbot", ["battle_losses", "coins"], [int(loseData[4]) + 1, 0], "owner", loser)
+    return [winData[0], winData[1], winData[3], loseData[0], loseData[1], loseData[3]]
+    
 
 
 ### HELPER FUNCTIONS

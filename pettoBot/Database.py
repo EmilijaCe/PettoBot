@@ -1,10 +1,10 @@
 import mysql.connector
 
-def __init__(password, database):
-    global con
-    con = mysql.connector.connect(host = 'localhost', user = 'root', password = password, database = database)
-    global mycursor
-    mycursor = con.cursor()
+
+password = input("MYSQL password: ")
+
+con = mysql.connector.connect(host = 'localhost', user = 'root', password = password, database = 'bots')
+mycursor = con.cursor()
 
 def insert(tablename, items, values):
     line = "insert into " + tablename + " ("
