@@ -5,28 +5,28 @@ import Personalities, Actions, Food
 
 ### INITIALIZE OBJECTS
 
-def __init__():
-    with open('pettoBot/personalities.txt', 'r') as file:
-        global personalities
-        personalities = []
-        for line in file:
-            pers = line.split("/")
-            personality = Personalities.Personalities(pers[0], pers[1], pers[2], pers[3], pers[4], pers[5], pers[6], pers[7], pers[8], pers[9], pers[10], pers[11], pers[12])
-            personalities.append(personality)
 
-    with open('pettoBot/food.txt', 'r') as file:
-        global food
-        food = []
-        for line in file:
-            fd = line.split()
-            food.append(Food.Food(fd[0], fd[1], fd[2]))
-            
-    with open('pettoBot/actions.txt', 'r') as file:
-        global actions
-        actions = []
-        for line in file:
-            ac = line.split()
-            actions.append(Actions.Actions(ac[0], ac[1], ac[2], ac[3], ac[4]))
+with open('pettoBot/personalities.txt', 'r') as file:
+    global personalities
+    personalities = []
+    for line in file:
+        pers = line.split("/")
+        personality = Personalities.Personalities(pers[0], pers[1], pers[2], pers[3], pers[4], pers[5], pers[6], pers[7], pers[8], pers[9], pers[10], pers[11], pers[12])
+        personalities.append(personality)
+
+with open('pettoBot/food.txt', 'r') as file:
+    global food
+    food = []
+    for line in file:
+        fd = line.split()
+        food.append(Food.Food(fd[0], fd[1], fd[2]))
+        
+with open('pettoBot/actions.txt', 'r') as file:
+    global actions
+    actions = []
+    for line in file:
+        ac = line.split()
+        actions.append(Actions.Actions(ac[0], ac[1], ac[2], ac[3], ac[4]))
 
 
 ### MAIN FUNCTIONS
@@ -62,7 +62,7 @@ def change_name(user, name):
 
 def profile(user):
     items = ["name", "owner", "picture", "gender", "adoption_date", "love_points", "battle_wins", "battle_losses", "personality", "coins"]
-    results = db.select("petbot", items, "owner", user)
+    results = db.select("petbot", items, "owner", user)[0]
     return results
     
 
@@ -71,10 +71,11 @@ def action(user, num):
         return "PettoBot: You do not have a pet!"
     
     action = str(actions[num].name)
-    results = db.select("petbot", ["name", action + "_time"], "owner", user)
-    
+    results = db.select("petbot", ["name", action + "_time"], "owner", user)[0]
     if action == "pet":
         pastForm = "petted"
+    elif action[len(action) - 1] == 'e':
+        pastform = action + "d"
     else:
         pastForm = action + "ed"
     
@@ -84,7 +85,7 @@ def action(user, num):
         if (currenttime - float(results[1]) < float(actions[num].time_limit) * 60):
             return f"PettoBot: You have already {pastForm} {results[0]}. Wait {actions[num].time_limit} minutes to {action} again."
     else:
-        lovePoints = int(db.select("petbot", ["love_points"], "owner", user)[0])
+        lovePoints = int(db.select("petbot", ["love_points"], "owner", user)[0][0])
         if (currenttime - float(results[1]) < float(actions[num].time_limit) * 60):
             return f"PettoBot: {results[0]} has already {pastForm}. Wait {actions[num].time_limit} minutes to {action} again."
         
@@ -94,7 +95,7 @@ def action(user, num):
 
 def show_love(user, num):
     action = str(actions[num].name)
-    results = db.select("petbot", ["love_points", "name", "personality", "picture"], "owner", user)
+    results = db.select("petbot", ["love_points", "name", "personality", "picture"], "owner", user)[0]
     love_points = int(results[0])
     love_points += int(actions[0].love)
     db.update("petbot", ["love_points", action + "_time", "hasloved"], [love_points, time.time(), 1], "owner", user)
@@ -107,15 +108,15 @@ def show_love(user, num):
 
 
 def train(user):
-    results = db.select("petbot", ["strength_points", "name", "personality", "picture"], "owner", user)
+    results = db.select("petbot", ["strength_points", "name", "personality", "picture"], "owner", user)[0]
     db.update("petbot", ["strength_points", "train_time"], [int(results[0]) + int(actions[2].strength), time.time()], "owner", user)
     personality = pickPersonality(results[2])
     return [results[1], personality.train, results[3]]
 
 
 def battle(challenger, opponent):
-    challengerStrength = int(db.select("petbot", ["strength_points"], "owner", challenger)[0])
-    opponentStrength = int(db.select("petbot", ["strength_points"], "owner", opponent)[0])
+    challengerStrength = int(db.select("petbot", ["strength_points"], "owner", challenger)[0][0])
+    opponentStrength = int(db.select("petbot", ["strength_points"], "owner", opponent)[0][0])
     db.update("petbot", ["battle_time"], [time.time()], "owner", challenger)
     db.update("petbot", ["battle_time"], [time.time()], "owner", opponent)
     
@@ -128,8 +129,8 @@ def battle(challenger, opponent):
 
     
 def winnerAndLoser(winner, loser):
-    winData = db.select("petbot", ["name", "personality", "coins", "picture", "battle_wins"], "owner", winner)
-    loseData = db.select("petbot", ["name", "personality", "coins", "picture", "battle_losses"], "owner", loser)
+    winData = db.select("petbot", ["name", "personality", "coins", "picture", "battle_wins"], "owner", winner)[0]
+    loseData = db.select("petbot", ["name", "personality", "coins", "picture", "battle_losses"], "owner", loser)[0]
     totalCoins = int(winData[2]) + int(loseData[2])
     db.update("petbot", ["battle_wins", "coins"], [int(winData[4]) + 1, totalCoins], "owner", winner)
     db.update("petbot", ["battle_losses", "coins"], [int(loseData[4]) + 1, 0], "owner", loser)
@@ -139,7 +140,7 @@ def winnerAndLoser(winner, loser):
 
 ### HELPER FUNCTIONS
 
-def pickPersonality(pers, personalities):
+def pickPersonality(pers):
     if (pers == "Energetic"):
         return personalities[0]
     elif (pers == "Gloomy"):
@@ -148,7 +149,7 @@ def pickPersonality(pers, personalities):
         return personalities[2]
 
 def hasadopted(user):
-    results = db.select("petbot", "owner")
+    results = db.select("petbot", ["owner"])
     for result in results:
         if str(result[0]) == user:
             return True
