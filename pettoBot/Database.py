@@ -3,9 +3,9 @@ import mysql.connector
 
 password = input("MYSQL password: ")
 
-con = mysql.connector.connect(host = 'localhost', user = 'root', password = password, database = 'bots')
+#con = mysql.connector.connect(host = 'localhost', user = 'root', password = password, database = 'bots')
 #con = mysql.connector.connect(host = 'pettobot-server.mysql.database.azure.com', user = 'efkabvewnb', password = password, database = 'pettobot-database')
-#con = mysql.connector.connect(user="efkabvewnb", password=password, host="pettobot-server.mysql.database.azure.com", port=3306, database="pettobot-database", ssl_ca="DigiCertGlobalRootCA.crt.pem", ssl_disabled=False)
+con = mysql.connector.connect(user="efkabvewnb", password=password, host="pettobot-server.mysql.database.azure.com", port=3306, database="pettobot-database", ssl_ca="DigiCertGlobalRootCA.crt.pem", ssl_disabled=False)
 mycursor = con.cursor()
 
 def insert(items, values):
