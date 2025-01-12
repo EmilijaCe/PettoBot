@@ -3,11 +3,13 @@ import mysql.connector
 
 password = input("MYSQL password: ")
 
-con = mysql.connector.connect(host = 'localhost', user = 'root', password = password, database = 'bots')
+#con = mysql.connector.connect(host = 'localhost', user = 'root', password = password, database = 'bots')
+#con = mysql.connector.connect(host = 'pettobot-server.mysql.database.azure.com', user = 'efkabvewnb', password = password, database = 'pettobot-database')
+con = mysql.connector.connect(user="efkabvewnb", password=password, host="pettobot-server.mysql.database.azure.com", port=3306, database="pettobot-database", ssl_ca="DigiCertGlobalRootCA.crt.pem", ssl_disabled=False)
 mycursor = con.cursor()
 
-def insert(tablename, items, values):
-    line = "insert into " + tablename + " ("
+def insert(items, values):
+    line = "insert into petbot ("
     last = len(items) - 1
     for i in range(len(items)):
         if i == last:
@@ -23,8 +25,8 @@ def insert(tablename, items, values):
     mycursor.execute(line, values)
     con.commit()
 
-def update(tablename, items, values, whereitem, wherevalue):
-    line = "update " + tablename + " set "
+def update(items, values, whereitem, wherevalue):
+    line = "update petbot set "
     last = len(items) - 1
     for i in range(len(items)):
         line += items[i] + " = " + str(values[i])
@@ -34,14 +36,14 @@ def update(tablename, items, values, whereitem, wherevalue):
     mycursor.execute(line)
     con.commit()
 
-def select(tablename, items, whereitem = None, wherevalue = None):
+def select(items, whereitem = None, wherevalue = None):
     line = "select "
     last = len(items) - 1
     for i in range(len(items)):
         line += str(items[i])
         if i != last:
             line += ", "
-    line += " from " + tablename
+    line += " from petbot"
     if whereitem != None:
         line += " where " + whereitem + " = " + str(wherevalue)
     line += ";"
