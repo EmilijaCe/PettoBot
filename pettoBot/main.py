@@ -1,10 +1,9 @@
-import time
-import discord
-import random
-import mysql.connector
-from discord.ui import Button, View
-import Personalities, Actions, Food
-import Database, Commands
+import os
+
+
+
+DBpassword = os.environ['PASSWORD']
+token = os.environ['TOKEN']
 
 
 '''
