@@ -1,8 +1,9 @@
 import discord
+import main
 from discord.ui import Button, View
 import Command_logic as cmd
 
-token = input("Discord bot token: ")
+
 bot = discord.Bot()
 
 @bot.event
@@ -154,4 +155,4 @@ async def battle_accepted(ctx, challenger, opponent):
 
 
 
-bot.run(token)
+bot.run(main.token)
