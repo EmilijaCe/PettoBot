@@ -57,10 +57,10 @@ async def pet(ctx):
     if response != None:
         await ctx.respond(response)
     else:
-        results = cmd.show_love(user, 0)
-        await ctx.respond(f"{results[0]}: {results[1]}")
-        await ctx.send(results[2])
-        await ctx.send(f"\n+{results[3]} love points")
+        name, sentence, picture, points = cmd.show_love(user, 0)
+        await ctx.respond(f"{name}: {sentence}")
+        await ctx.send(picture)
+        await ctx.send(f"\n+{points} love points")
 
 
 @bot.slash_command(description = "Shows love to your pet")
@@ -70,10 +70,10 @@ async def walk(ctx):
     if response != None:
         await ctx.respond(response)
     else:
-        results = cmd.show_love(user, 1)
-        await ctx.respond(f"{results[0]}: {results[1]}")
-        await ctx.send(results[2])
-        await ctx.send(f"\n+{results[3]} love points")
+        name, sentence, picture, points = cmd.show_love(user, 1)
+        await ctx.respond(f"{name}: {sentence}")
+        await ctx.send(picture)
+        await ctx.send(f"\n+{points} love points")
 
 
 @bot.slash_command(description = "Increases pet's strength")
@@ -83,9 +83,9 @@ async def train(ctx):
     if response != None:
         await ctx.respond(response)
     else:
-        results = cmd.train(user)
-        await ctx.respond(f"{results[0]}: {results[1]}")
-        await ctx.send(results[2])
+        name, sentence, picture = cmd.train(user)
+        await ctx.respond(f"{name}: {sentence}")
+        await ctx.send(picture)
         await ctx.send("\n++strength")
         
 
@@ -137,24 +137,21 @@ async def battle(ctx, *, user):
     
 
 async def battle_accepted(ctx, challenger, opponent):
-    result = cmd.battle(challenger, opponent)
-    if result == "tie":
+    winner, loser = cmd.battle(challenger, opponent)
+    if winner == None and loser == None:
         await ctx.respond("PettoBot: The battle ends with a tie! The coins remain in your pockets")
         return
-    elif result == challenger:
-        results = cmd.winnerAndLoser(challenger, opponent)
-    elif result == opponent:
-        results = cmd.winnerAndLoser(opponent, challenger)
-    
-    await ctx.send(f"PettoBot: {results[0]} strikes {results[3]} with great force!")
-    await ctx.send(results[2])
-    await ctx.send(f"PettoBot: {results[3]} takes the blow!")
-    await ctx.send(results[5])
-    
-    personalityChal = cmd.pickPersonality(results[1])
-    personalityOpp = cmd.pickPersonality(results[4])
-    await ctx.send(f"{results[0]}: {personalityChal.winning}")
-    await ctx.send(f"{results[3]}: {personalityOpp.losing}")
-    
+    else:
+        await ctx.send(f"PettoBot: {winner.petname} strikes {loser.petname} with great force!")
+        await ctx.send(winner.picture)
+        await ctx.send(f"PettoBot: {loser.petname} takes the blow!")
+        await ctx.send(loser.picture)
+        await ctx.send(f"{winner.petname}: {winner.personality.winning}")
+        await ctx.send(f"{loser.petname}: {loser.personality.losing}")
+        return
+
+
+
+
 
 bot.run(token)
