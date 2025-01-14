@@ -155,4 +155,4 @@ async def battle_accepted(ctx, challenger, opponent):
 
 
 
-bot.run(main.token)
+bot.run("MTMxMTc0NTE1NjEzMDgwMzgyMg.GEa2yK.p-6nI3YtsgIxOWLf-vqoTh7omLCx7O5KcRMN1o")

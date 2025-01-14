@@ -1,10 +1,10 @@
 import os
 
-
+'''
 
 DBpassword = os.environ['PASSWORD']
 token = os.environ['TOKEN']
-
+'''
 
 '''
 things to improve:
