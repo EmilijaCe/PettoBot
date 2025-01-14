@@ -1,7 +1,7 @@
 import mysql.connector
 import main
 
-
+'''
 #con = mysql.connector.connect(host = 'localhost', user = 'root', password = main.DBpassword, database = 'bots')
 #con = mysql.connector.connect(host = 'pettobot-server.mysql.database.azure.com', user = 'efkabvewnb', password = password, database = 'pettobot-database')
 con = mysql.connector.connect(user="efkabvewnb", password=main.DBpassword, host="pettobot-server.mysql.database.azure.com", port=3306, database="pettobot-database", ssl_ca="DigiCertGlobalRootCA.crt.pem", ssl_disabled=False)
@@ -48,4 +48,12 @@ def select(items, whereitem = None, wherevalue = None):
     line += ";"
     mycursor.execute(line)
     results = mycursor.fetchall()
-    return results
+    return results'''
+def select(items, whereitem = None, wherevalue = None):
+    return None
+
+def update(items, values, whereitem, wherevalue):
+    return None
+
+def insert(items, values):
+    return None
