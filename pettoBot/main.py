@@ -1,10 +1,11 @@
-import os
+import Commands
 
-'''
 
-DBpassword = os.environ['PASSWORD']
-token = os.environ['TOKEN']
-'''
+token = "MTMxMTc0NTE1NjEzMDgwMzgyMg.GEa2yK.p-6nI3YtsgIxOWLf-vqoTh7omLCx7O5KcRMN1o"
+
+
+
+
 
 '''
 things to improve:
@@ -17,3 +18,4 @@ things to improve:
 7. find a better way to store personality comments (for example, a table)
 8. use a different database to store data
 '''
+
