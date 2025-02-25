@@ -5,12 +5,11 @@ import Command_logic as cmd
 
 
 bot = discord.Bot()
-'''
+
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user}")
 
-'''
 
 @bot.slash_command(description = "Adopts a new pet")
 async def adopt(ctx, *, gender):
@@ -155,4 +154,4 @@ async def battle_accepted(ctx, challenger, opponent):
 
 
 
-bot.run("MTMxMTc0NTE1NjEzMDgwMzgyMg.GEa2yK.p-6nI3YtsgIxOWLf-vqoTh7omLCx7O5KcRMN1o")
+bot.run(main.token)
