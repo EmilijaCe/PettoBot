@@ -3,14 +3,14 @@ import mysql.connector
 from mysql.connector import errorcode
 from mock import patch
 import test
-import pettoBot.config as config
+import pettoBot.configs as configs
 import azure.cosmos.cosmos_client as cosmos_client
 
 
-HOST = config.settings['host']
-MASTER_KEY = config.settings['master_key']
-DATABASE_ID = config.settings['database_id']
-CONTAINER_ID = config.settings['container_id']
+HOST = configs.settings['host']
+MASTER_KEY = configs.settings['master_key']
+DATABASE_ID = configs.settings['database_id']
+CONTAINER_ID = configs.settings['container_id']
 
 
 class MockDB(TestCase):

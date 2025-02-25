@@ -1,4 +1,3 @@
-import main
 
 '''
 import mysql.connector
@@ -52,12 +51,12 @@ def select(items, whereitem = None, wherevalue = None):
 
 
 import azure.cosmos.cosmos_client as cosmos_client
-import config
+import configs
 
-HOST = config.settings['host']
-MASTER_KEY = config.settings['master_key']
-DATABASE_ID = config.settings['database_id']
-CONTAINER_ID = config.settings['container_id']
+HOST = configs.settings['host']
+MASTER_KEY = configs.settings['master_key']
+DATABASE_ID = configs.settings['database_id']
+CONTAINER_ID = configs.settings['container_id']
 
 client = cosmos_client.CosmosClient(HOST, {'masterKey': MASTER_KEY}, user_agent="CosmosDBPythonQuickstart", user_agent_overwrite=True)
 db = client.get_database_client(DATABASE_ID)
