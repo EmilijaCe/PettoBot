@@ -11,7 +11,6 @@ async def on_ready():
     print(f"Logged in as {bot.user}")
 
 
-
 @bot.slash_command(description = "Adopts a new pet")
 async def adopt(ctx, *, gender):
     user = str(ctx.author.id)

@@ -3,6 +3,9 @@ import random
 import time
 import Personalities, Actions, Food, User
 
+defaultItems = ["name", "love_points", "strength_points", "coins", "battle_wins", "battle_losses", "pet_time", "walk_time", "train_time", "battle_time", "tookcoin", "hasloved"]
+defaultValues = ["Jordy", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"]
+
 ### INITIALIZE OBJECTS
 
 
@@ -42,8 +45,8 @@ def adopt(user, gender):
 
     adoptiondate = time.strftime("%d-%m-%Y, %H:%M:%S", time.localtime())
     
-    values = [user, gender, personality.name, adoptiondate, picture]
-    items = ["owner", "gender", "personality", "adoption_date", "picture"]
+    values = [user, gender, personality.name, adoptiondate, picture] + defaultValues
+    items = ["id", "gender", "personality", "adoption_date", "picture"] + defaultItems
     
     db.insert(items, values)
     return f"PettoBot: Congratulations! You successfully adopted a new pet!\n\nJordy: {personality.adoption}"
@@ -56,13 +59,13 @@ def change_name(user, name):
     if (not hasadopted(user)):
         return "PettoBot: You do not have a pet!"
     
-    db.update("petbot", ["name"], [name], "owner", user)
+    db.update("petbot", ["name"], [name], "id", user)
     return f"PettoBot: Alright! Your pet's name will now be {name}"
 
 
 def profile(user):
-    items = ["name", "owner", "picture", "gender", "adoption_date", "love_points", "battle_wins", "battle_losses", "personality", "coins"]
-    results = db.select(items, "owner", user)[0]
+    items = ["name", "id", "picture", "gender", "adoption_date", "love_points", "battle_wins", "battle_losses", "personality", "coins"]
+    results = db.select(items, "id", user)[0]
     return results
     
 
@@ -71,7 +74,7 @@ def action(user, num):
         return "PettoBot: You do not have a pet!"
     
     action = str(actions[num].name)
-    results = db.select(["name", action + "_time"], "owner", user)[0]
+    results = db.select(["name", action + "_time"], "id", user)[0]
     if action == "pet":
         pastForm = "petted"
     elif action[len(action) - 1] == 'e':
@@ -85,7 +88,7 @@ def action(user, num):
         if (currenttime - float(results[1]) < float(actions[num].time_limit) * 60):
             return f"PettoBot: You have already {pastForm} {results[0]}. Wait {actions[num].time_limit} minutes to {action} again."
     else:
-        lovePoints = int(db.select(["love_points"], "owner", user)[0][0])
+        lovePoints = int(db.select(["love_points"], "id", user)[0][0])
         if (currenttime - float(results[1]) < float(actions[num].time_limit) * 60):
             return f"PettoBot: {results[0]} has already {pastForm}. Wait {actions[num].time_limit} minutes to {action} again."
         
@@ -95,10 +98,10 @@ def action(user, num):
 
 def show_love(user, num):
     action = str(actions[num].name)
-    results = db.select(["love_points", "name", "personality", "picture"], "owner", user)[0]
+    results = db.select(["love_points", "name", "personality", "picture"], "id", user)[0]
     love_points = int(results[0])
     love_points += int(actions[0].love)
-    db.update(["love_points", action + "_time", "hasloved"], [love_points, time.time(), 1], "owner", user)
+    db.update(["love_points", action + "_time", "hasloved"], [love_points, time.time(), 1], "id", user)
     personality = pickPersonality(results[2])
     if num == 0:
         loveOptions = [personality.pet1, personality.pet2]
@@ -108,21 +111,21 @@ def show_love(user, num):
 
 
 def train(user):
-    results = db.select(["strength_points", "name", "personality", "picture"], "owner", user)[0]
-    db.update(["strength_points", "train_time"], [int(results[0]) + int(actions[2].strength), time.time()], "owner", user)
+    results = db.select(["strength_points", "name", "personality", "picture"], "id", user)[0]
+    db.update(["strength_points", "train_time"], [int(results[0]) + int(actions[2].strength), time.time()], "id", user)
     personality = pickPersonality(results[2])
     return results[1], personality.train, results[3]
 
 
 def battle(challenger, opponent):
-    results1 = db.select(["name", "picture", "personality", "strength_points", "battle_wins", "battle_losses", "coins"], "owner", challenger)[0]
-    results2 = db.select(["name", "picture", "personality", "strength_points", "battle_wins", "battle_losses", "coins"], "owner", opponent)[0]
+    results1 = db.select(["name", "picture", "personality", "strength_points", "battle_wins", "battle_losses", "coins"], "id", challenger)[0]
+    results2 = db.select(["name", "picture", "personality", "strength_points", "battle_wins", "battle_losses", "coins"], "id", opponent)[0]
     
     userChallenger = User.User(challenger, results1[0], results1[1], results1[2], results1[3], results1[4], results1[5], results1[6])
     userOpponent = User.User(opponent, results2[0], results2[1], results2[2], results2[3], results2[4], results2[5], results2[6])
     
-    db.update(["battle_time"], [time.time()], "owner", challenger)
-    db.update(["battle_time"], [time.time()], "owner", opponent)
+    db.update(["battle_time"], [time.time()], "id", challenger)
+    db.update(["battle_time"], [time.time()], "id", opponent)
     
     if userChallenger.strength > userOpponent.strength:
         winner = userChallenger
@@ -134,8 +137,8 @@ def battle(challenger, opponent):
         return None, None
     
     totalCoins = int(winner.coins) + int(loser.coins)
-    db.update(["battle_wins", "coins"], [int(winner.wins) + 1, totalCoins], "owner", winner.name)
-    db.update(["battle_losses", "coins"], [int(loser.losses) + 1, 0], "owner", loser.name)
+    db.update(["battle_wins", "coins"], [int(winner.wins) + 1, totalCoins], "id", winner.name)
+    db.update(["battle_losses", "coins"], [int(loser.losses) + 1, 0], "id", loser.name)
     
     return winner, loser
     
@@ -153,7 +156,7 @@ def pickPersonality(pers):
         return personalities[2]
 
 def hasadopted(user):
-    results = db.select(["owner"])
+    results = db.select(["id"])
     for result in results:
         if str(result[0]) == user:
             return True
