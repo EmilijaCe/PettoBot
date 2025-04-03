@@ -1,10 +1,16 @@
 import discord
-import main
 from discord.ui import Button, View
-import Command_logic as cmd
 
 
 bot = discord.Bot()
+
+def __init__(command_logic, token, init):
+    global cmd
+    cmd = command_logic
+    global initial
+    initial = init
+    bot.run(token)
+
 
 @bot.event
 async def on_ready():
@@ -52,12 +58,13 @@ async def profile(ctx):
 @bot.slash_command(description = "Shows love to your pet")
 async def pet(ctx):
     user = str(ctx.author.id)
-    response = cmd.action(user, 0)
+    action = initial.get_actions()[0]
+    response = cmd.action_valid(user, action)
     
     if response != None:
         await ctx.respond(response)
     else:
-        name, sentence, picture, points = cmd.show_love(user, 0)
+        name, sentence, picture, points = cmd.show_love(user, action)
         await ctx.respond(f"{name}: {sentence}")
         await ctx.send(picture)
         await ctx.send(f"\n+{points} love points")
@@ -66,11 +73,12 @@ async def pet(ctx):
 @bot.slash_command(description = "Shows love to your pet")
 async def walk(ctx):
     user = str(ctx.author.id)
-    response = cmd.action(user, 1)
+    action = initial.get_actions()[1]
+    response = cmd.action_valid(user, action)
     if response != None:
         await ctx.respond(response)
     else:
-        name, sentence, picture, points = cmd.show_love(user, 1)
+        name, sentence, picture, points = cmd.show_love(user, action)
         await ctx.respond(f"{name}: {sentence}")
         await ctx.send(picture)
         await ctx.send(f"\n+{points} love points")
@@ -79,11 +87,12 @@ async def walk(ctx):
 @bot.slash_command(description = "Increases pet's strength")
 async def train(ctx):
     user = str(ctx.author.id)
-    response = cmd.action(user, 2)
+    action = initial.get_actions()[2]
+    response = cmd.action_valid(user, action)
     if response != None:
         await ctx.respond(response)
     else:
-        name, sentence, picture = cmd.train(user)
+        name, sentence, picture = cmd.train(user, action)
         await ctx.respond(f"{name}: {sentence}")
         await ctx.send(picture)
         await ctx.send("\n++strength")
@@ -97,11 +106,12 @@ async def battle(ctx, *, user):
     opponent = opponent.replace("<@", "")
     opponent = opponent.replace('>', '')
     
-    response = cmd.action(challenger, 3)
+    action = initial.get_actions()[3]
+    response = cmd.action_valid(challenger, action)
     if response != None:
         await ctx.respond(response)
         return
-    response = cmd.action(opponent, 3)
+    response = cmd.action_valid(opponent, action)
     if response != None:
         await ctx.respond(response)
         return
@@ -149,9 +159,3 @@ async def battle_accepted(ctx, challenger, opponent):
         await ctx.send(f"{winner.petname}: {winner.personality.winning}")
         await ctx.send(f"{loser.petname}: {loser.personality.losing}")
         return
-
-
-
-
-
-bot.run(main.token)
