@@ -1,6 +1,8 @@
 import discord
 from discord.ui import Button, View
+import Command_executor
 
+exec = Command_executor.Command_executor()
 
 bot = discord.Bot()
 
@@ -11,7 +13,6 @@ def __init__(command_logic, token, init):
     initial = init
     bot.run(token)
 
-
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user}")
@@ -20,19 +21,22 @@ async def on_ready():
 @bot.slash_command(description = "Adopts a new pet")
 async def adopt(ctx, *, gender):
     user = str(ctx.author.id)
-    await ctx.respond(cmd.adopt(user, gender))
+    await ctx.respond(exec.execute(cmd.adopt, user, gender))
+    #await ctx.respond(cmd.adopt(user, gender))
 
 
 @bot.slash_command(description = "Changes the name of the pet")
 async def change_name(ctx, *, name):
     user = str(ctx.author.id)
-    await ctx.respond(cmd.change_name(user, name))
+    #await ctx.respond(cmd.change_name(user, name))
+    await ctx.respond(exec.execute(cmd.change_name, user, name))
 
 
 @bot.slash_command(description = "Shows pet's profile")
 async def profile(ctx):
     user = str(ctx.author.id)
-    results = cmd.profile(user)
+    results = exec.execute(cmd.profile, user)
+    #results = cmd.profile(user)
     user = ctx.author.name
 
     embed=discord.Embed(title= results[0] + "'s profile", url = None)
@@ -49,7 +53,8 @@ async def profile(ctx):
     embed.add_field(name = "Battle wins: " + str(results[6]), value = "", inline = True)
     embed.add_field(name = "Battle losses: " + str(results[7]), value = "", inline = True)
     
-    personality = cmd.pickPersonality(results[8])
+    personality = exec.execute(cmd.pickPersonality, results[8])
+    #personality = cmd.pickPersonality(results[8])
     
     await ctx.respond(f"{results[0]}: {personality.profile}")
     await ctx.send(embed=embed)
@@ -59,12 +64,14 @@ async def profile(ctx):
 async def pet(ctx):
     user = str(ctx.author.id)
     action = initial.get_actions()[0]
-    response = cmd.action_valid(user, action)
+    response = exec.execute(cmd.action_valid, user, action)
+    #response = cmd.action_valid(user, action)
     
     if response != None:
         await ctx.respond(response)
     else:
-        name, sentence, picture, points = cmd.show_love(user, action)
+        name, sentence, picture, points = exec.execute(cmd.show_love, user, action)
+        #name, sentence, picture, points = cmd.show_love(user, action)
         await ctx.respond(f"{name}: {sentence}")
         await ctx.send(picture)
         await ctx.send(f"\n+{points} love points")
@@ -74,11 +81,13 @@ async def pet(ctx):
 async def walk(ctx):
     user = str(ctx.author.id)
     action = initial.get_actions()[1]
-    response = cmd.action_valid(user, action)
+    response = exec.execute(cmd.action_valid, user, action)
+    #response = cmd.action_valid(user, action)
     if response != None:
         await ctx.respond(response)
     else:
-        name, sentence, picture, points = cmd.show_love(user, action)
+        name, sentence, picture, points = exec.execute(cmd.show_love, user, action)
+        #name, sentence, picture, points = cmd.show_love(user, action)
         await ctx.respond(f"{name}: {sentence}")
         await ctx.send(picture)
         await ctx.send(f"\n+{points} love points")
@@ -88,11 +97,13 @@ async def walk(ctx):
 async def train(ctx):
     user = str(ctx.author.id)
     action = initial.get_actions()[2]
-    response = cmd.action_valid(user, action)
+    response = exec.execute(cmd.action_valid, user, action)
+    #response = cmd.action_valid(user, action)
     if response != None:
         await ctx.respond(response)
     else:
-        name, sentence, picture = cmd.train(user, action)
+        name, sentence, picture = exec.execute(cmd.train, user, action)
+        #name, sentence, picture = cmd.train(user, action)
         await ctx.respond(f"{name}: {sentence}")
         await ctx.send(picture)
         await ctx.send("\n++strength")
@@ -107,11 +118,13 @@ async def battle(ctx, *, user):
     opponent = opponent.replace('>', '')
     
     action = initial.get_actions()[3]
-    response = cmd.action_valid(challenger, action)
+    response = exec.execute(cmd.action_valid, challenger, action)
+    #response = cmd.action_valid(challenger, action)
     if response != None:
         await ctx.respond(response)
         return
-    response = cmd.action_valid(opponent, action)
+    response = exec.execute(cmd.action_valid, opponent, action)
+    #response = cmd.action_valid(opponent, action)
     if response != None:
         await ctx.respond(response)
         return
@@ -147,7 +160,8 @@ async def battle(ctx, *, user):
     
 
 async def battle_accepted(ctx, challenger, opponent):
-    winner, loser = cmd.battle(challenger, opponent)
+    winner, loser = exec.execute(cmd.battle, challenger, opponent)
+    #winner, loser = cmd.battle(challenger, opponent)
     if winner == None and loser == None:
         await ctx.respond("PettoBot: The battle ends with a tie! The coins remain in your pockets")
         return
