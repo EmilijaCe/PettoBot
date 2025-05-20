@@ -16,4 +16,16 @@ class Command_executor:
             else:    
                 print(f"Function executed successfully.\n", file=f)
                 return results
-        
+'''         
+    def execute(self, func, name):
+        with open('logs.txt', 'a') as f:
+            print(f"***{time.strftime("%Y-%m-%d, %H:%M:%S", time.localtime())} Executing function: {name}", file=f)
+            
+            try:
+                results = func()
+            except:
+                print(f"Function exeution failed.\n", file=f)
+            else:    
+                print(f"Function executed successfully.\n", file=f)
+                return results
+'''
