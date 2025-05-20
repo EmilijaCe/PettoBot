@@ -4,8 +4,7 @@ import Commands
 import Database
 import configs
 
-
-token = ""
+token = configs.settings['token']
 defaultItems = ["name", "love_points", "strength_points", "coins", "battle_wins", "battle_losses", "pet_time", "walk_time", "train_time", "battle_time", "tookcoin", "hasloved"]
 defaultValues = ["Jordy", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"]
 HOST = configs.settings['host']

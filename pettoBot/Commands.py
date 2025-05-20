@@ -21,6 +21,8 @@ async def on_ready():
 @bot.slash_command(description = "Adopts a new pet")
 async def adopt(ctx, *, gender):
     user = str(ctx.author.id)
+    #myfunctioncall = lambda: cmd.adopt(user, gender)
+    #exec.execute(myfunctioncall, cmd.adopt.__name__)
     await ctx.respond(exec.execute(cmd.adopt, user, gender))
     #await ctx.respond(cmd.adopt(user, gender))
 
