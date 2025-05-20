@@ -5,7 +5,7 @@ import Database
 import configs
 
 
-token = "MTMxMTc0NTE1NjEzMDgwMzgyMg.GEa2yK.p-6nI3YtsgIxOWLf-vqoTh7omLCx7O5KcRMN1o"
+token = ""
 defaultItems = ["name", "love_points", "strength_points", "coins", "battle_wins", "battle_losses", "pet_time", "walk_time", "train_time", "battle_time", "tookcoin", "hasloved"]
 defaultValues = ["Jordy", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"]
 HOST = configs.settings['host']
